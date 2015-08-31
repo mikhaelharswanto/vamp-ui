@@ -10,6 +10,7 @@ var ButtonBar = require('./BlueprintsButtonBar.jsx');
 var BlueprintListItem = require('./BlueprintListItem.jsx');
 var BlueprintActions = require('../../actions/BlueprintActions');
 var BlueprintStore = require('../../stores/BlueprintStore');
+var Pagination = require('../pagination.jsx');
 
 
 var BlueprintsList = React.createClass({
@@ -32,13 +33,23 @@ var BlueprintsList = React.createClass({
       blueprintName: '',
       crudType: '',
       pending: false,
+      pagination: null,
+      page: 1
     };
   },
+  componentWillMount: function(){
+    if(this.context.router.getCurrentParams().id && !isNaN(this.context.router.getCurrentParams().id)){
+      this.setState({ page: this.context.router.getCurrentParams().id });
+      BlueprintActions.getAllBlueprints(this.state.page);
+    } else {
+      this.setState({ page: 1 });
+      BlueprintActions.getAllBlueprints(this.state.page);
+    }
+  },
   componentDidMount: function(){
-    if(this.context.router.getCurrentParams().id)
+    if(this.context.router.getCurrentParams().id && isNaN(this.context.router.getCurrentParams().id))
       this.handleDetail(this.context.router.getCurrentParams().id);
 
-    BlueprintActions.getAllBlueprints();
     this.setInterval(this.pollBackend, 4000);
   },
   componentWillReceiveProps: function(nextProps){
@@ -64,6 +75,8 @@ var BlueprintsList = React.createClass({
         requestingBlueprint: _.isEmpty(_currentBlueprint) 
       });
     }
+
+    this.setState({ pagination: BlueprintStore.getPagination() });
   },
   componentWillUnmount: function() {
     BlueprintActions.getAllBlueprints();
@@ -95,6 +108,9 @@ var BlueprintsList = React.createClass({
   },
   clearCurrentBlueprint: function(){
     this.setState({ currentBlueprint: {}, blueprintName: '' });
+  },
+  navigateToPage: function(page){
+    console.log(page);
   },
 
   // Render
@@ -173,12 +189,13 @@ var BlueprintsList = React.createClass({
             </div>
           </li>
           {blueprints}
+          <Pagination pageLinks={this.state.pagination} />
         </TransitionGroup>
       </div>    
   )},
 
   pollBackend: function() {
-    BlueprintActions.getAllBlueprints();
+    BlueprintActions.getAllBlueprints(this.state.page);
   }
 });
  

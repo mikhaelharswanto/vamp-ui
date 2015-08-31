@@ -4,8 +4,9 @@ var Api = require('../utils/Api');
 
 var BlueprintActions = {
 
-  getAllBlueprints: function() {
-    Api.get('/blueprints', null, BlueprintConstants.GET_ALL_BLUEPRINTS);
+  getAllBlueprints: function(page) {
+    page = typeof page !== 'undefined' ? page : '1';
+    Api.get('/blueprints?page=' + page + '&per_page=3', null, BlueprintConstants.GET_ALL_BLUEPRINTS);
   },
   getBlueprint: function(blueprintName, format) {
     format = typeof format !== 'undefined' ? format : null;

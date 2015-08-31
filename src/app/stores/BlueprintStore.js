@@ -11,6 +11,7 @@ var CHANGE_EVENT = 'change';
 var _blueprints = {};
 var _currentBlueprint = {};
 var _error = null;
+var _pagination = null;
 
 var _persistBlueprints = function(response){
   var _temp = {}
@@ -24,18 +25,39 @@ var _persistBlueprints = function(response){
 var _addBlueprint = function(response){
   var newBlueprint = JSON.parse(response.text);
   _blueprints[newBlueprint.name] = newBlueprint;
-}
+};
 var _persistCurrentBlueprint = function(response){
   _currentBlueprint = response.text;
-}
+};
+var _formatPagination = function(links){
+  var formattedPagination = {}
+  if(links){
+    var splitLinks = JSON.stringify(links).split(',');
+    _.each(splitLinks, function(link){
+      var splitRel = link.split(';'),
+          value = splitRel[0].substr(splitRel[0].indexOf('=')+1, 1); 
+      splitRel[1] = splitRel[1].replace(/\"/g,"");
+      formattedPagination[splitRel[1].substr(splitRel[1].indexOf('=')+1)] = parseInt(value);
+    });
+    if(formattedPagination.last > 1){
+      return formattedPagination
+    } else {
+      return null;
+    }
+  }
+};
 
 var BlueprintStore = assign({}, EventEmitter.prototype,{
 
   getAll: function() {
+    //console.log('get all bp');
     return _blueprints;
   },
   getCurrentBlueprint: function() {
     return _currentBlueprint;
+  },
+  getPagination: function(){
+    return _formatPagination(_pagination);
   },
   getError: function(){
     var returnError = _error;
@@ -76,6 +98,9 @@ var BlueprintStore = assign({}, EventEmitter.prototype,{
       // GET
       case BlueprintConstants.GET_ALL_BLUEPRINTS + '_SUCCESS':
         AppStore.deleteError('UNREACHABLE');
+        console.log('get all');
+        if(payload.response.headers.link)
+          _pagination = payload.response.headers.link;
         _persistBlueprints(payload.response);
         break;
       case BlueprintConstants.GET_ALL_BLUEPRINTS + '_UNREACHABLE':
