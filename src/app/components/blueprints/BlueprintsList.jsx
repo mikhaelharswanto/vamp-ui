@@ -41,10 +41,11 @@ var BlueprintsList = React.createClass({
     if(this.context.router.getCurrentParams().id && !isNaN(this.context.router.getCurrentParams().id)){
       this.setState({ page: this.context.router.getCurrentParams().id });
       BlueprintActions.getAllBlueprints(this.state.page);
-    } else {
-      this.setState({ page: 1 });
-      BlueprintActions.getAllBlueprints(this.state.page);
-    }
+    } 
+    // else {
+    //   this.setState({ page: 1 });
+    //   BlueprintActions.getAllBlueprints(this.state.page);
+    // }
   },
   componentDidMount: function(){
     if(this.context.router.getCurrentParams().id && isNaN(this.context.router.getCurrentParams().id))
@@ -76,7 +77,7 @@ var BlueprintsList = React.createClass({
       });
     }
 
-    this.setState({ pagination: BlueprintStore.getPagination() });
+    //this.setState({ pagination: BlueprintStore.getPagination() });
   },
   componentWillUnmount: function() {
     BlueprintActions.getAllBlueprints();
@@ -109,8 +110,11 @@ var BlueprintsList = React.createClass({
   clearCurrentBlueprint: function(){
     this.setState({ currentBlueprint: {}, blueprintName: '' });
   },
-  navigateToPage: function(page){
-    console.log(page);
+  navigateToPage: function(){
+    console.log('navigate');
+    var nextPage = parseInt(this.state.page)+1;
+    this.setState({page: nextPage});
+    BlueprintActions.getAllBlueprints(nextPage);
   },
 
   // Render
@@ -189,7 +193,7 @@ var BlueprintsList = React.createClass({
             </div>
           </li>
           {blueprints}
-          <Pagination pageLinks={this.state.pagination} />
+          <Pagination pageLinks={this.state.pagination} navNext={this.navigateToPage} />
         </TransitionGroup>
       </div>    
   )},

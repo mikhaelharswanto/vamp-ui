@@ -98,7 +98,7 @@ var BlueprintStore = assign({}, EventEmitter.prototype,{
       // GET
       case BlueprintConstants.GET_ALL_BLUEPRINTS + '_SUCCESS':
         AppStore.deleteError('UNREACHABLE');
-        console.log('get all');
+        console.log('get all', payload.response);
         if(payload.response.headers.link)
           _pagination = payload.response.headers.link;
         _persistBlueprints(payload.response);

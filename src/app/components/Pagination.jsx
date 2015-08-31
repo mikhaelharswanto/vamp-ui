@@ -10,8 +10,7 @@ var Pagination = React.createClass({
 
   // Component lifecycle
   componentDidMount: function(){
-    console.log(this.context.router.getCurrentParams());
-    console.log('hoi');
+
   },
 
   // Render
@@ -24,7 +23,7 @@ var Pagination = React.createClass({
 
     return(
       <div className='pagination'> 
-        <a href="http://localhost:3000/#/blueprints/2">next</a>
+        <button onClick={this.props.navNext}>next</button>
       </div>
   )}
 });
