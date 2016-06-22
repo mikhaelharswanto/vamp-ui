@@ -28,12 +28,20 @@ var DeploymentActions = {
     Api.update('/deployments/' + name, body, DeploymentConstants.UPDATE_DEPLOYMENT, format);
   },
 
-
   // DELETE
   deleteFullDeployment: function(deployment) {
+    function cleanupDeploymentObj(){
+      var cleanedClusters = {};
+      _.each(deployment.clusters, function(cluster, name) {
+        cleanedClusters[name] = _.omit(cluster, ["gateways", "dialects"]);
+      });
+      deployment.clusters = cleanedClusters;
+      return deployment;
+    }
+
     var req = {};
     req.name = deployment.name;
-    req.body = JSON.stringify(_.omit(deployment, "status"));
+    req.body = JSON.stringify(cleanupDeploymentObj());
     
     Api.del('/deployments/' + req.name, req.body, DeploymentConstants.DELETE_FULL_DEPLOYMENT);
   },
