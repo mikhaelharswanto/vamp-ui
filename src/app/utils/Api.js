@@ -67,9 +67,8 @@ function toOld(response, blueprint) {
   _.each(blueprint.clusters, function(cluster, name) {
 
     // transform routing and servers
-    var routing = cluster.routing;
+    var routing = cluster.gateways.port;
     if (routing) {
-      routing = routing[Object.keys(routing)[0]];
       _.each(cluster.services, function(service) {
         var name = service.breed.name ? service.breed.name : service.breed.reference;
         if (routing && routing.routes && routing.routes[name]) {

@@ -78,7 +78,7 @@ var DeploymentActions = {
         endpoint = portAndProtocolArray[0];
     }, this);
     
-    tags.push('gateways', 'gateways:' + (deployment.name + '_' + endpoint + '____').replace(/\W+/g, '_'));
+    tags.push('gateways', 'gateways:' + (deployment.name + '/' + endpoint));
     tags.push('metrics');
     tags.push('metrics:responseTime');
 

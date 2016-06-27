@@ -40,7 +40,7 @@ var ClusterBox = React.createClass({
     var name = this.props.name ;
     var clusterForService = {
       name: name, 
-      port: Object.keys(this.props.cluster.routes)[0]
+      port: this.props.cluster.gateways.port
     }
 
     // Dynamic classes
