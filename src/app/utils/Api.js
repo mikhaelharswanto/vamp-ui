@@ -133,9 +133,15 @@ function toNew(deployment) {
   var old = deployments[deployment.name];
   if (old) {
     _.each(deployment.clusters, function(cluster, name) {
+      var routing = old.clusters[name].gateways.port;
+
+      _.each(routing, function(val, key) {
+        if (key !== 'routes') {
+          delete routing[key];
+        }
+      });
+
       _.each(cluster.services, function(service) {
-        var oldCluster = old.clusters[name];
-        var routing = oldCluster.routing[Object.keys(oldCluster.routing)[0]];
         routing.routes[service.breed.name] = service.routing;
 
         _.each(Object.keys(routing.routes), function(name) {
@@ -143,9 +149,8 @@ function toNew(deployment) {
           if (route.weight && route.weight.indexOf('%', route.weight.length - 1) === -1)
             route.weight = route.weight + '%';
         });
-
-        delete routing['port'];
       });
+
     });
     return old;
   }
