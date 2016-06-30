@@ -135,15 +135,12 @@ function toNew(deployment) {
     _.each(deployment.clusters, function(cluster, name) {
       var routing = old.clusters[name].gateways.port;
 
-      _.each(routing, function(val, key) {
-        if (key !== 'routes') {
-          delete routing[key];
-        }
-      });
-
       _.each(cluster.services, function(service) {
-        routing.routes[service.breed.name] = service.routing;
+        if (!service.routing) {
+          return;
+        }
 
+        routing.routes[service.breed.name] = service.routing;
         _.each(Object.keys(routing.routes), function(name) {
           var route = routing.routes[name];
           if (route.weight && route.weight.indexOf('%', route.weight.length - 1) === -1)
@@ -152,11 +149,30 @@ function toNew(deployment) {
       });
 
     });
-    return old;
+    return stripUnnecessaryValues(old);
   }
 
-  return deployment;
+  return stripUnnecessaryValues(deployment);
 };
+
+function stripUnnecessaryValuesYml(deploymentStr) {
+  var deployment = YAML.parse(deploymentStr);
+  return stripUnnecessaryValues(deployment);
+}
+
+function stripUnnecessaryValues(deployment) {
+
+  _.each(deployment.clusters, function(cluster, name) {
+    var routing = cluster.gateways.port;
+
+    _.each(routing, function(val, key) {
+      if (key !== 'routes') {
+        delete routing[key];
+      }
+    });
+  });
+  return YAML.stringify(deployment);
+}
 
 function handleResponse(actionType) {
   return function (err, res) {
@@ -270,6 +286,8 @@ var Api = {
 
     if (uri.indexOf('deployments') > -1 && body.endpoints) {
       body = toNew(body);
+    } else if (uri.indexOf('deployments') > -1 && contenttype === 'application/x-yaml') {
+      body = stripUnnecessaryValuesYml(body);
     }
 
     _pendingRequests[actionType] = put(url,purge(body), contenttype).end(
