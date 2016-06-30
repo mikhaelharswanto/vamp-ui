@@ -142,8 +142,11 @@ function toNew(deployment) {
       });
 
       _.each(cluster.services, function(service) {
+        if (!service.routing) {
+          return;
+        }
+        
         routing.routes[service.breed.name] = service.routing;
-
         _.each(Object.keys(routing.routes), function(name) {
           var route = routing.routes[name];
           if (route.weight && route.weight.indexOf('%', route.weight.length - 1) === -1)
@@ -157,6 +160,12 @@ function toNew(deployment) {
 
   return deployment;
 };
+
+function toNewYml(deploymentStr) {
+  var deployment = YAML.parse(deploymentStr);
+  var newDeployment = toNew(deployment);
+  return YAML.stringify(newDeployment);
+}
 
 function handleResponse(actionType) {
   return function (err, res) {
@@ -270,6 +279,8 @@ var Api = {
 
     if (uri.indexOf('deployments') > -1 && body.endpoints) {
       body = toNew(body);
+    } else if (uri.indexOf('deployments') > -1 && contenttype === 'application/x-yaml') {
+      body = toNewYml(body);
     }
 
     _pendingRequests[actionType] = put(url,purge(body), contenttype).end(
