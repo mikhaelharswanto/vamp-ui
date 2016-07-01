@@ -40,7 +40,7 @@ var ClusterSettingsBox = React.createClass({
   setWeights: function(services){
     var _weightsObject = {};
     _.each(services, function(service,key){
-      _weightsObject[service.breed.name] = service.routing.weight;
+      _weightsObject[service.breed.name] = service.routing? service.routing.weight:0;
     }, this);
     this.setState({ weights: _weightsObject });
   },
