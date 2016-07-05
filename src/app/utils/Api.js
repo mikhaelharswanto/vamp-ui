@@ -68,23 +68,26 @@ function toOld(response, blueprint) {
 
     // transform routing and servers
     var routing = cluster.gateways.port;
-    if (routing) {
-      _.each(cluster.services, function(service) {
-        var name = service.breed.name ? service.breed.name : service.breed.reference;
-        if (routing && routing.routes && routing.routes[name]) {
-          service.routing = routing.routes[name];
+    _.each(cluster.services, function(service) {
+      var name = service.breed.name ? service.breed.name : service.breed.reference;
+      if (routing && routing.routes && routing.routes[name]) {
+        service.routing = routing.routes[name];
 
-          if (service.routing.weight) {
-            service.routing.weight = service.routing.weight.replace("%", "");
-          }
+        if (service.routing.weight) {
+          service.routing.weight = service.routing.weight.replace("%", "");
         }
-        // servers
-        service.servers = service.instances;
-        delete service['instances'];
-      });
+      } else {
+        service.routing = {weight: 100};
+      }
+      // servers
+      service.servers = service.instances;
+      delete service['instances'];
+    });
+
+    if (routing) {
       delete routing['port'];
+      delete cluster['routing'];
     }
-    delete cluster['routing'];
 
     // transform port mapping
     cluster['routes'] = cluster.port_mapping;
