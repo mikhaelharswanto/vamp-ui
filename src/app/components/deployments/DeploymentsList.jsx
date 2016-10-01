@@ -54,7 +54,9 @@ var DeploymentsList = React.createClass({
         errorMessage = errorsToBeShown ? this.props.errors['UNREACHABLE'].message : '';
 
     // Prepare Deploymentslist
-    _.each(allDeployments, function(deployment,key) {
+    var sortedKeys = _.sortBy(_.keys(allDeployments));
+    _.each(sortedKeys, function(key) {
+      var deployment = allDeployments[key];
       var filterTerm = this.state.filterText.toLowerCase() || false;
       if ( ( deployment.name.toLowerCase().indexOf(filterTerm) === -1 && filterTerm) ) {
         return;

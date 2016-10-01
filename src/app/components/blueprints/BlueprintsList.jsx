@@ -108,7 +108,9 @@ var BlueprintsList = React.createClass({
         i = 0;
 
     // Prepare Blueprintslist
-    _.each(allBlueprints, function(blueprint,key) {
+    var sortedKeys = _.sortBy(_.keys(allBlueprints));
+    _.each(sortedKeys, function(key) {
+      var blueprint = allBlueprints[key];
       var filterTerm = this.state.filterText.toLowerCase() || false;
       if ( ( blueprint.name.toLowerCase().indexOf(filterTerm) === -1 && filterTerm) ) {
         return;
