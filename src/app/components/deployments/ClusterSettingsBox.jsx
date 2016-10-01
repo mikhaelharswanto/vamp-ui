@@ -54,7 +54,7 @@ var ClusterSettingsBox = React.createClass({
     newWeights[serviceName] = parseInt(value);
 
     for (service in newWeights){
-      _totalWeight += newWeights[service];
+      _totalWeight += parseInt(newWeights[service]);
       if(singlePair && service != serviceName)
         newWeights[service] = 100 - value;
     }
