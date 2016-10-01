@@ -84,7 +84,7 @@ var BreedStore = assign({}, EventEmitter.prototype,{
         break;
 
       case BreedConstants.CREATE_BREED + '_SUCCESS':
-        mixpanel.track("New breed added");        
+        mixpanel.track("New breed added");
         var response = JSON.parse(payload.response.text),
             newBreedName = response.name;
         if(newBreedName in _breeds){
@@ -95,6 +95,16 @@ var BreedStore = assign({}, EventEmitter.prototype,{
         }
         break;
       case BreedConstants.CREATE_BREED + '_ERROR':
+        var errortext = JSON.parse(payload.response.text)
+        _error = errortext.message;
+        break;
+
+      case BreedConstants.UPDATE_BREED + '_SUCCESS':
+        mixpanel.track("New breed updated");
+        _addBreed(payload.response);
+        _persistCurrentBreed(payload.response);
+        break;
+      case BreedConstants.UPDATE_BREED + '_ERROR':
         var errortext = JSON.parse(payload.response.text)
         _error = errortext.message;
         break;

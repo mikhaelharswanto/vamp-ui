@@ -105,7 +105,9 @@ var BreedsList = React.createClass({
         errorMessage = errorsToBeShown ? this.props.errors['UNREACHABLE'].message : '';
     
     // Prepare Breedslist
-    _.each(allBreeds, function(breed,key) {
+    var sortedKeys = _.sortBy(_.keys(allBreeds));
+    _.each(sortedKeys, function(key) {
+      var breed = allBreeds[key];
       var filterTerm = this.state.filterText.toLowerCase() || false;
       if ( ( breed.name.toLowerCase().indexOf(filterTerm) === -1 && breed.deployable.toLowerCase().indexOf(filterTerm) === -1 && filterTerm) ) {
         return;
